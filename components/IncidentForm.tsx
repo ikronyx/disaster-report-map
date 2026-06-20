@@ -2,10 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapContainer, TileLayer } from "react-leaflet";
+// import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import dynamic from "next/dynamic";
 
 import LocationPicker from "@/components/LocationPicker";
+
+const ReportMap = dynamic(() => import("@/components/ReportMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[350px] flex items-center justify-center border rounded-xl">
+      Loading map...
+    </div>
+  ),
+});
 
 export default function IncidentForm() {
   const router = useRouter();
@@ -190,23 +200,12 @@ export default function IncidentForm() {
 
         {locationMode === "map" && (
           <div className="overflow-hidden rounded-xl border">
-            <MapContainer
-              center={[7.8731, 80.7718]}
-              zoom={8}
-              style={{
-                height: "350px",
-                width: "100%",
+            <ReportMap
+              onLocationSelect={(lat, lng) => {
+                setLatitude(lat);
+                setLongitude(lng);
               }}
-            >
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-              <LocationPicker
-                onLocationSelect={(lat, lng) => {
-                  setLatitude(lat);
-                  setLongitude(lng);
-                }}
-              />
-            </MapContainer>
+            />
           </div>
         )}
 
